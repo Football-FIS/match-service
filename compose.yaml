@@ -3,9 +3,10 @@ services:
     build:
       context: match_service
       target: builder
-    env_file:
-      - .env
-      - ../docker-service/.env
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - MONGO_URL=${MONGO_URL}
     restart: always
     ports: 
       - '8001:8000'
