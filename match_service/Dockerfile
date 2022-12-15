@@ -1,7 +1,7 @@
 
 # syntax=docker/dockerfile:1.4
 
-FROM python:3.10-alpine AS builder
+FROM python:3.8-alpine AS builder
 EXPOSE 8000
 WORKDIR /match_service
 COPY requirements.txt /match_service
