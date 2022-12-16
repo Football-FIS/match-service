@@ -1,5 +1,6 @@
 services:
   web:
+    container_name: match-service
     build:
       context: match_service
       target: builder
