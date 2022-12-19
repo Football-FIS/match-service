@@ -3,6 +3,7 @@ from .models import Match
 from rest_framework import viewsets, status
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+import requests
 
 class MatchViewSet(viewsets.ModelViewSet):
 
@@ -28,10 +29,31 @@ class MatchViewSet(viewsets.ModelViewSet):
 
     # create
     def create(self, request):
+        openWeatherKey ='b8de83b3476d58590a4fbf3661f4dabe'
+
         serializer = MatchSerializer(data=request.data)
-        serializer.is_valid()
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        city = request.data['city']
+        api = requests.get('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + openWeatherKey).json()
+        #celsius = (api['main']['temp'] - 32) / 1.8
+        
+        if api['cod'] == '404':
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+        if serializer.is_valid():
+
+            celsius = api['main']['temp'] - 273.15
+            
+            serializer.validated_data['weather'] = api['weather'][0]['description'] + ' - Temperatura: %.2f ' %celsius
+            serializer.save()
+            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+        
 
     # update
     def update(self, request, pk):
