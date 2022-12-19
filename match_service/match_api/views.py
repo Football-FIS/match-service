@@ -17,6 +17,8 @@ class MatchViewSet(viewsets.ModelViewSet):
         queryset = Match.objects.all()
         serializer_class = MatchSerializer(queryset, many=True)
         return Response(serializer_class.data)
+        
+       
 
     # get
     def get(self, request, pk=None):
@@ -43,5 +45,5 @@ class MatchViewSet(viewsets.ModelViewSet):
     def delete(self, request, pk):
         match = self.get_object(pk)
         match.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
         
