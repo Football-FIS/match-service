@@ -16,7 +16,7 @@ TEAM_SERV_URL = "TEAM_SERV_URL"
 team_backend_url = os.getenv(TEAM_SERV_URL, 'https://team-service-danaremar.cloud.okteto.net/api/v1/')
 
 def validate_token(headers):
-    return requests.post(team_backend_url + ' validate-token', headers=headers)
+    return requests.post(team_backend_url + 'validate-token', headers=headers)
 
 class MatchViewSet(viewsets.ModelViewSet):
 
