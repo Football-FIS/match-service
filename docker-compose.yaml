@@ -7,6 +7,9 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
       - MONGO_URL=${MONGO_URL}
+      - TEAM_SERV_URL=${TEAM_SERV_URL}
+      - HOURS_TO_SEND_EMAIL=${HOURS_TO_SEND_EMAIL}
+      - OPEN_WEATHER_KEY=${OPEN_WEATHER_KEY}
     restart: always
     ports: 
       - '8001:8000'
