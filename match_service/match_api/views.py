@@ -86,19 +86,19 @@ class MatchViewSet(viewsets.ModelViewSet):
 
 
     # update
-    def update(self, request, pk):
+    def update(self, request):
+
+        # object to write
+        new_match = request.data
 
         # get saved match
-        match = get_object_or_404(Match, pk=pk)
+        match = get_object_or_404(Match, pk=new_match['id'])
 
         # check permissions
         bt = validate_token(request.headers)
         user = get_user_from_request(bt)
         if(bt.status_code!=200 and match.user_id == user['id']):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        # object to write
-        new_match = request.data
 
         # WeatherAPI
         new_match['weather'] = get_weather(request.data['city'])
