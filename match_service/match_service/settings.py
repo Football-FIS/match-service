@@ -32,7 +32,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200',
     'http://localhost',
     'https://localhost',
-    os.getenv('TEAM_SERV_URL', 'https://frontend-danaremar.cloud.okteto.net/')
+    os.getenv('TEAM_SERV_URL', 'https://frontend-danaremar.cloud.okteto.net')
 ]
 
 
