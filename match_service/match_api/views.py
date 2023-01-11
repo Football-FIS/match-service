@@ -80,9 +80,9 @@ class MatchViewSet(viewsets.ModelViewSet):
         serializer = MatchSerializer(data=match)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.validated_data, status=status.HTTP_400_BAD_REQUEST)
 
 
     # update
@@ -111,7 +111,7 @@ class MatchViewSet(viewsets.ModelViewSet):
         serializer = MatchSerializer(data=new_match)
         serializer.is_valid()
         serializer.update(match, new_match)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
     # delete
     def delete(self, request, pk):
