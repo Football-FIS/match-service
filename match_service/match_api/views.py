@@ -85,10 +85,11 @@ class MatchViewSet(viewsets.ModelViewSet):
 
         serializer = MatchSerializer(data=match)
         if serializer.is_valid():
+            serializer.validated_data['weather'] = get_weather(request.data['city'])
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.validated_data, status=status.HTTP_400_BAD_REQUEST)
 
 
     # update
