@@ -102,26 +102,26 @@ class MatchViewSet(viewsets.ModelViewSet):
         match = get_object_or_404(Match, id=pk)
 
         # check permissions
-        bt = validate_token(request.headers)
+        '''bt = validate_token(request.headers)
         user = get_user_from_request(bt)
         if(bt.status_code!=200 and match.user_id == user['id']):
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)'''
 
         # WeatherAPI
         #new_match['weather'] = get_weather(request.data['city'])
             
         # Team service
-        user = get_user_from_request(bt)
-        new_match['user_id'] = user['id']
+        '''user = get_user_from_request(bt)
+        new_match['user_id'] = user['id']'''
 
         # update if valid
-        serializer = MatchSerializer(data=new_match)
+        serializer = MatchSerializer(match,data=request.data)
         '''serializer.is_valid()
         serializer.update(match, new_match)
         return Response(serializer.data, status=status.HTTP_200_OK)'''
         if serializer.is_valid():
             serializer.validated_data['weather'] = get_weather(request.data['city'])
-            serializer.update(match, new_match)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
