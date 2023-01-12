@@ -77,7 +77,7 @@ class MatchViewSet(viewsets.ModelViewSet):
         match = request.data
 
         # WeatherAPI
-        match['weather'] = get_weather(request.data['city'])
+        #match['weather'] = get_weather(request.data['city'])
             
         # Team service
         user = get_user_from_request(bt)
@@ -87,19 +87,19 @@ class MatchViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.validated_data['weather'] = get_weather(request.data['city'])
             serializer.save()
-            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.validated_data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
     # update
-    def update(self, request):
+    def update(self, request,pk):
 
         # object to write
         new_match = request.data
 
         # get saved match
-        match = get_object_or_404(Match, pk=new_match['id'])
+        match = get_object_or_404(Match, id=pk)
 
         # check permissions
         bt = validate_token(request.headers)
@@ -108,7 +108,7 @@ class MatchViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # WeatherAPI
-        new_match['weather'] = get_weather(request.data['city'])
+        #new_match['weather'] = get_weather(request.data['city'])
             
         # Team service
         user = get_user_from_request(bt)
@@ -116,9 +116,16 @@ class MatchViewSet(viewsets.ModelViewSet):
 
         # update if valid
         serializer = MatchSerializer(data=new_match)
-        serializer.is_valid()
+        '''serializer.is_valid()
         serializer.update(match, new_match)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)'''
+        if serializer.is_valid():
+            serializer.validated_data['weather'] = get_weather(request.data['city'])
+            serializer.update(match, new_match)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        
 
     # delete
     def delete(self, request, pk):
