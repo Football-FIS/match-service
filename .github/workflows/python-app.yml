@@ -12,7 +12,7 @@ on:
 env:
   SECRET_KEY: 'django-insecure-8*23gd&8$quu(fy6j4$1h24##xv6#@%%d&fd+$0&63e)m4$(!@'
   DEBUG: 1
-  MONGO_URL: 'mongodb+srv://calat:1234@cluster0.i1yihyt.mongodb.net/?retryWrites=true&w=majority' # Se debe cambiar con la DB respectiva
+  MONGO_URL: 'mongodb+srv://match:MWyTtjZTs7i31rnW@match.cnh2f2f.mongodb.net/test?retryWrites=true&w=majority' # Se debe cambiar con la DB respectiva
 
 permissions:
   contents: read
