@@ -26,7 +26,7 @@ def get_weather(city):
     open_weather_key = os.environ.get(OPEN_WEATHER_KEY, DEFAULT_OPEN_WEATHER_KEY)
     api = requests.get('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + open_weather_key).json()
     if api['cod'] == '404':
-        return ''
+        return 'Not avaliable'
     celsius = api['main']['temp'] - 273.15
     return api['weather'][0]['description'] + ' - Temperatura: %.2f ' %celsius
 
@@ -77,7 +77,7 @@ class MatchViewSet(viewsets.ModelViewSet):
         match = request.data
 
         # WeatherAPI
-        #match['weather'] = get_weather(request.data['city'])
+        match['weather'] = get_weather(match['city'])
             
         # Team service
         user = get_user_from_request(bt)
@@ -85,11 +85,10 @@ class MatchViewSet(viewsets.ModelViewSet):
 
         serializer = MatchSerializer(data=match)
         if serializer.is_valid():
-            serializer.validated_data['weather'] = get_weather(request.data['city'])
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
     # update
@@ -111,14 +110,16 @@ class MatchViewSet(viewsets.ModelViewSet):
         user = get_user_from_request(bt)
         new_match['user_id'] = user['id']
 
+        # WeatherAPI
+        new_match['weather'] = get_weather(new_match['city'])
+
         # update if valid
         serializer = MatchSerializer(instance=match, data=new_match, partial=True)
         if(serializer.is_valid()):
-            serializer.validated_data['weather'] = get_weather(request.data['city'])
             serializer.save()
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.validated_data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         
 
     # delete
