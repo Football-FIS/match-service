@@ -144,7 +144,7 @@ class SendEmailSet(viewsets.ModelViewSet):
     serializer_class = MatchSerializer
 
     # get
-    def get_request(self, pk):
+    def get(self, pk):
 
         # filter by date (given by environment variable)
         hours_to_send_email = int(os.environ.get(HOURS_TO_SEND_EMAIL, '3'))

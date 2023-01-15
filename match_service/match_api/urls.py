@@ -23,7 +23,7 @@ urlpatterns = [
     path('match/', views.MatchViewSet.as_view({'post':'create','put':'update'})),
     path('match/<pk>', views.MatchViewSet.as_view({'get':'get', 'delete':'delete'})),
     path('match/url/<pk>', views.MatchViewSet.as_view({'get':'get_url'})),
-    path('send_email', views.MatchViewSet.as_view({'get':'get'})),
+    path('send_email', views.SendEmailSet.as_view({'get':'get'})),
 
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
