@@ -144,26 +144,39 @@ class SendEmailSet(viewsets.ModelViewSet):
     serializer_class = MatchSerializer
 
     # get
-    def get(self, pk):
+    def get(self, request):
 
         # filter by date (given by environment variable)
-        hours_to_send_email = int(os.environ.get(HOURS_TO_SEND_EMAIL, '3'))
-        date = datetime.now() - relativedelta(hours=hours_to_send_email)
-        matches = Match.objects.filter(sent_email = True, start_date_lte = date)
+        hours_to_send_email = int(os.environ.get('HOURS_TO_SEND_EMAIL', '3'))
+        now = datetime.now()
+        date = now + relativedelta(hours=hours_to_send_email)
+        # queryset = Match.objects.filter(sent_email=False, start_date__lte = date)
+        # queryset = Match.objects.filter(start_date__gte = now, start_date__lte = date)
+        queryset = Match.objects.filter(start_date__lte = date)
+        serializer = MatchSerializer(queryset, many=True)
 
-        for match in matches:
+        for match in serializer.data:
 
-            # update weather
-            match['weather'] = get_weather(match['city'])
+            # WITHOUT QUERY
+            # m_date = datetime.strptime(match['start_date'])
+            # m_sent_email = match['sent_email']
+            # if(m_date < date and not m_sent_email):
 
-            # send to backend
-            requests.post(team_backend_url + 'send-email-player', data=match)
+            # WITH QUERY
+            m_sent_email = match['sent_email']
+            if(not m_sent_email):
 
-            # updated with sent_email
-            modified_match = match
-            modified_match.sent_email = True
-            serializer = MatchSerializer(data=match)
-            serializer.update(match, modified_match)
+                # update weather
+                match['weather'] = get_weather(match['city'])
+
+                # send to backend
+                requests.post(team_backend_url + 'send-email-player', data=match)
+
+                # updated with sent_email
+                modified_match = match
+                modified_match.sent_email = True
+                serializer = MatchSerializer(data=match)
+                serializer.update(match, modified_match)
 
         # return HTTP 200
         return Response(data=None, status=status.HTTP_200_OK)
