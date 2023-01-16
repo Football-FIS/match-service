@@ -172,11 +172,15 @@ class SendEmailSet(viewsets.ModelViewSet):
                 # send to backend
                 requests.post(team_backend_url + 'send-email-player', data=match)
 
-                # updated with sent_email
-                modified_match = match
-                modified_match.sent_email = True
-                serializer = MatchSerializer(data=match)
-                serializer.update(match, modified_match)
+                # get original from id
+                original_match = get_object_or_404(Match, pk=match['id'])
+
+                # update from selected
+                new_match = original_match
+                new_match.sent_email = True
+                serializer_upd = MatchSerializer(instance=original_match, data=new_match, partial=True)
+                if(serializer_upd.is_valid()):
+                    serializer_upd.save()
 
         # return HTTP 200
         return Response(data=None, status=status.HTTP_200_OK)
