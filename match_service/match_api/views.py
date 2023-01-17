@@ -28,7 +28,7 @@ def get_weather(city):
     if api['cod'] == '404':
         return 'Not avaliable'
     celsius = api['main']['temp'] - 273.15
-    return api['weather'][0]['description'] + ' - Temperatura: %.2f ' %celsius
+    return api['weather'][0]['description'] + ' - Temperatura: %.2f ' %celsius + 'ºC'
 
 
 
