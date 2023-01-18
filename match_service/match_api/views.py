@@ -61,8 +61,8 @@ class MatchViewSet(viewsets.ModelViewSet):
 
     #get url
     def get_url(self, request, pk=None):
-        queryset = Match.objects.filter(url=pk)
-        serializer_class = MatchSerializer(queryset, many=True)
+        queryset = Match.objects.filter(url=pk).first()
+        serializer_class = MatchSerializer(queryset)
         return Response(serializer_class.data)
 
     # create
