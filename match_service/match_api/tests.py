@@ -1,10 +1,12 @@
 from django.test import TestCase
 from django.shortcuts import get_object_or_404
+from django.utils.crypto import get_random_string
 
 from rest_framework.response import Response
 from .models import Match
 from .views import MatchViewSet, SendEmailSet
 from .serializers import MatchSerializer
+
 import pytest
 # Create your tests here.
 
@@ -64,6 +66,59 @@ class TestCreate(TestCase):
         print(response.data)
         assert response.status_code == 201
 
+    """
+        COMPONENT / DB INTEGRATION TEST:
+        Check create method in Match with city more 50 characters
+    """
+    
+    @pytest.mark.django_db
+    def test_create_city_error(self):
+
+        json_match = {
+                    'user_id' :2,
+                    'opponent' : 'Barcelona',
+                    'is_local' : True,
+                    'alignment' : '4-3-3',
+                    'url': 'https://www.google.com/webhp?hl',
+                    'city' :get_random_string(length=55),
+                    'weather' : 'clouds',
+                    'start_date' : '2023-01-11T13:38:00Z',
+                    'sent_email' : False
+                }
+        
+
+        MatchViewSet.create = mock_create
+        response = MatchViewSet.create(json_match)
+        
+        assert response.status_code == 400
+
+            
+    """
+        COMPONENT / DB INTEGRATION TEST:
+        Check create method in Match with opponent more 250 characters
+    """
+    
+
+    @pytest.mark.django_db
+    def test_create_opp_error(self):
+
+        json_match = {
+                    'user_id' :2,
+                    'opponent' : get_random_string(length=260),
+                    'is_local' : True,
+                    'alignment' : '4-3-3',
+                    'url': 'https://www.google.com/webhp?hl',
+                    'city' :'Barcelona',
+                    'weather' : 'clouds',
+                    'start_date' : '2023-01-11T13:38:00Z',
+                    'sent_email' : False
+                }
+        
+
+        MatchViewSet.create = mock_create
+        response = MatchViewSet.create(json_match)
+        
+        assert response.status_code == 400
     """
         COMPONENT / DB INTEGRATION TEST:
         Check create method in Match with opponent blank
@@ -372,3 +427,37 @@ class TestCreate(TestCase):
     def test_send_email(self):
         response = SendEmailSet.get(self, request='')
         assert response.status_code == 200
+                  
+            
+    """
+        INTEGRATION TEST: 
+        Check openWeather is up
+    """
+    @pytest.mark.django_db
+    def test_open_weather(self):
+        city = 'Seville'
+        open_weather_key = os.environ.get('OPEN_WEATHER_KEY', 'b8de83b3476d58590a4fbf3661f4dabe')
+        response = requests.get('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + open_weather_key)
+        assert response.status_code == 200
+
+    """
+        INTEGRATION TEST: 
+        Check openWeather is up
+    """
+    @pytest.mark.django_db
+    def test_open_weather_bad_token(self):
+        city = 'Seville'
+        open_weather_key = os.environ.get('OPEN_WEATHER_KEY', 'JAJANOENTRAS')
+        response = requests.get('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + open_weather_key)
+        assert response.status_code == 401
+
+    """
+        INTEGRATION TEST: 
+        Check openWeather returns not valid city when random city is entered
+    """
+    @pytest.mark.django_db
+    def test_open_weather_bad_city(self):
+        city = 'Afgorjohnaf'
+        open_weather_key = os.environ.get('OPEN_WEATHER_KEY', 'b8de83b3476d58590a4fbf3661f4dabe')
+        response = requests.get('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + open_weather_key)
+        assert response.status_code == 404
