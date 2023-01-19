@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework.response import Response
 from .models import Match
-from .views import MatchViewSet
+from .views import MatchViewSet, SendEmailSet
 from .serializers import MatchSerializer
 import pytest
 # Create your tests here.
@@ -358,3 +358,10 @@ class TestCreate(TestCase):
         assert match_count == 0
 
 
+    """
+        INTEGRATION TEST: Check send email to team-service correctly
+    """
+    @pytest.mark.django_db
+    def test_send_email(self):
+        response = SendEmailSet.get(self, request='')
+        assert response.status_code == 200
