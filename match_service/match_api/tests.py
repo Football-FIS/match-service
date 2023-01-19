@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework.response import Response
 from .models import Match
-from .views import MatchViewSet
+from .views import MatchViewSet, SendEmailSet
 from .serializers import MatchSerializer
 import pytest
 # Create your tests here.
@@ -37,6 +37,7 @@ def mock_update(obj,datos):
 class TestCreate(TestCase):
 
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check create method in Match.
     """
     @pytest.mark.django_db
@@ -64,6 +65,7 @@ class TestCreate(TestCase):
         assert response.status_code == 201
 
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check create method in Match with opponent blank
     """ 
     @pytest.mark.django_db
@@ -92,6 +94,7 @@ class TestCreate(TestCase):
         assert response.status_code == 400
     
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check create method in Match with date blank
     """ 
     @pytest.mark.django_db
@@ -118,9 +121,8 @@ class TestCreate(TestCase):
         assert response.status_code == 400
 
 
-
-
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check create method in Match with url blank
     """ 
     @pytest.mark.django_db
@@ -148,6 +150,7 @@ class TestCreate(TestCase):
         assert response.status_code == 400
 
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check create method in Match with url more than 50 characters
     """ 
     @pytest.mark.django_db
@@ -176,6 +179,7 @@ class TestCreate(TestCase):
 
 
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check update method in Match.
     """
     @pytest.mark.django_db
@@ -220,10 +224,10 @@ class TestCreate(TestCase):
 
 
         assert response.status_code == 200
-        #assert response.data.id == objeto.id
 
 
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check update method in Match with opponent blank
     """
     @pytest.mark.django_db
@@ -270,6 +274,7 @@ class TestCreate(TestCase):
         assert response.status_code == 400
         
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check update method in Match with date blank
     """
     @pytest.mark.django_db
@@ -317,6 +322,7 @@ class TestCreate(TestCase):
 
 
     """
+        COMPONENT / DB INTEGRATION TEST:
         Check delete method in match.
     """
     @pytest.mark.django_db
@@ -358,3 +364,11 @@ class TestCreate(TestCase):
         assert match_count == 0
 
 
+    """
+        INTEGRATION TEST: 
+        Check send email to team-service correctly
+    """
+    @pytest.mark.django_db
+    def test_send_email(self):
+        response = SendEmailSet.get(self, request='')
+        assert response.status_code == 200
