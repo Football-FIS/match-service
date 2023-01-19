@@ -44,6 +44,18 @@ Tanto la aplicación cumplen los requisitos para una **calificación de 9**. A c
  - **Mecanismo de autenticación común (JWT)**: todos los microservicios validan el token JWT para obtener el usuario y validar si puede realizar dicha operación.
  - **ElectronJS**: permite compilar la aplicación como aplicación de escritorio. Puede observarse en el servicio [footmatch-frontend](https://github.com/Football-FIS/footmatch-frontend) en los ficheros [package.json](https://github.com/Football-FIS/footmatch-frontend/blob/develop/package.json) y [main.js](https://github.com/Football-FIS/footmatch-frontend/blob/develop/main.js).
 
+
+### Pruebas realizadas en el Microservicio
+
+En nuestro servicio se realizaron los siguientes tests:
+Se debe tomar en cuenta que nuestros tests se encuentran en el siguiente archivo [tests.py](https://github.com/Football-FIS/match-service/blob/develop/match_service/match_api/tests.py).
+
+ - **Tests de Componentes**: Comienzan desde la línea 47 hasta 448. Se han realizado un total de 12 tests.
+ - **Tests de Integración(Team-Service y la API externa OpenWeather)**: Continuan desde la línea 451 hasta la 560. Se han realizado un total de 7 tests.
+ - **Tests de Integracion con la BBDD**: El último test ubicado en la línea 561. Se ha realizado un 1 test.
+
+
+
 ### Otros requisitos
 
  - Mínimo de 20 pruebas de componente
