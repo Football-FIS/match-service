@@ -6,9 +6,13 @@ from rest_framework.response import Response
 from .models import Match
 from .views import MatchViewSet, SendEmailSet
 from .serializers import MatchSerializer
-
+import os
+import requests
 import pytest
 # Create your tests here.
+
+
+team_url = 'https://team-service-danaremar.cloud.okteto.net/api/v1/'
 
 def mock_create(datos):
             serializador = MatchSerializer(data=datos)
@@ -91,7 +95,30 @@ class TestCreate(TestCase):
         response = MatchViewSet.create(json_match)
         
         assert response.status_code == 400
+            
+    """
+        Check create method in Match with aligment more 250 characters
+    """
+    @pytest.mark.django_db
+    def test_create_aligment_error(self):
 
+        json_match = {
+                    'user_id' :2,
+                    'opponent' : 'Barcelona',
+                    'is_local' : True,
+                    'alignment' : get_random_string(length=260),
+                    'url': 'https://www.google.com/webhp?hl',
+                    'city' :'barcelona',
+                    'weather' : 'clouds',
+                    'start_date' : '2023-01-11T13:38:00Z',
+                    'sent_email' : False
+                }
+        
+
+        MatchViewSet.create = mock_create
+        response = MatchViewSet.create(json_match)
+        
+        assert response.status_code == 400
             
     """
         COMPONENT / DB INTEGRATION TEST:
@@ -461,3 +488,84 @@ class TestCreate(TestCase):
         open_weather_key = os.environ.get('OPEN_WEATHER_KEY', 'b8de83b3476d58590a4fbf3661f4dabe')
         response = requests.get('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=' + open_weather_key)
         assert response.status_code == 404
+            
+            
+   """
+        INTEGRATION TEST: 
+        Check if fails sending email to team-service correctly
+        when user_id is incorrect
+    """
+    @pytest.mark.django_db
+    def test_send_email_bad_format(self):
+        ls = {
+                'alignment':"5-3-2",
+                'city': "Seville",
+                'id': "rwH9poGZngyHspOeOIEKQXeU",
+                'is_local': 'True',
+                'opponent': "Sevilla FC 2",
+                'sent_email': 'False',
+                'start_date': "2023-01-19T14:07:00Z",
+                'url': "sevilla1",
+                'user_id': '154787545',
+                'weather': "scattered clouds - Temperatura: 17.19"
+            }
+        response = requests.post(team_url + 'send-email-player', data=ls)
+        assert response.status_code == 500
+
+
+    """
+        INTEGRATION TEST: 
+        Check send email to team-service correctly,
+        another way to check
+    """
+    @pytest.mark.django_db
+    def test_send_email_2(self):
+        ls = {
+                'alignment':"5-3-2",
+                'city': "Seville",
+                'id': "rwH9poGZngyHspOeOIEKQXeU",
+                'is_local': True,
+                'opponent': "Sevilla FC 2",
+                'sent_email': False,
+                'start_date': "2023-01-19T14:07:00Z",
+                'url': "sevilla1",
+                'user_id': 16,
+                'weather': "scattered clouds - Temperatura: 17.19"
+            }
+        response = requests.post(team_url + 'send-email-player', data=ls)
+        assert response.status_code == 200
+
+    """
+        INTEGRATION TEST: 
+        Check if fails sending email to team-service correctly
+        when user_id is incorrect
+    """
+    @pytest.mark.django_db
+    def test_send_email_bad_user_id(self):
+        ls = {
+                'alignment':"5-3-2",
+                'city': "Seville",
+                'id': "rwH9poGZngyHspOeOIEKQXeU",
+                'is_local': True,
+                'opponent': "Sevilla FC 2",
+                'sent_email': False,
+                'start_date': "2023-01-19T14:07:00Z",
+                'url': "sevilla1",
+                'user_id': 154787545,
+                'weather': "scattered clouds - Temperatura: 17.19"
+            }
+        response = requests.post(team_url + 'send-email-player', data=ls)
+        assert response.status_code == 500
+    """
+        INTEGRATION MONGODB TEST: 
+        Check if connects to DB
+    """
+    @pytest.mark.django_db
+    def test_mongo_db_conn(self):
+        db_conn = connections['default']
+        try:
+            c = db_conn.cursor()
+        except OperationalError:
+            assert False
+        else:
+            assert True
