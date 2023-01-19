@@ -1,3 +1,5 @@
+from django.db import connections
+from django.db.utils import OperationalError
 from django.test import TestCase
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
@@ -490,7 +492,7 @@ class TestCreate(TestCase):
         assert response.status_code == 404
             
             
-   """
+    """
         INTEGRATION TEST: 
         Check if fails sending email to team-service correctly
         when user_id is incorrect
